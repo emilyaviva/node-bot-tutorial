@@ -20,7 +20,7 @@ function makeTweet() {
     if (error) {
       console.error(error);
       throw error;
-    };
+    }
     console.log('Posted tweet: \"' + content + '\"');
   });
 }
