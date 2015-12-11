@@ -1,5 +1,7 @@
 # Your First Node App: Make a Twitter Bot
 
+## Introduction
+
 ## Tools You Will Need
 
 In this tutorial, I assume you know how to use a text editor like [Atom](atom.io), and are at least somewhat comfortable with the terminal command line.
@@ -22,6 +24,12 @@ npm init
 ```
 
 For the moment, it's okay to just hit "enter" if you don't know what to write when `npm init` prompts you for input. We'll come back to it later. For now, we'll end up with a file in the root level of our project directory called `package.json`, which is a basic configuration file for our new Node application, and a new directory called `node_modules`, which will contain **dependencies**: third-party packages that we will use, basically, to avoid having to write everything ourselves.
+
+We'll also want to create a file called `.gitignore`, which tells Git not to track everything listed in it. The only thing here we don't want to track is the `node_modules` directory that will store our app's dependencies. We can create the `.gitignore` file from our text editor, or we can create and write it from the command line:
+
+```bash
+echo "node_modules" >> .gitignore
+```
 
 ## Making a tweet generator
 
@@ -85,7 +93,7 @@ npm install --save lodash
 
 The `--save` tells `npm` that we want to install Lodash as a dependency for this project: in other words, our bot won't run unless Lodash is available. If we open up the `package.json` file now, we'll see that there's a section at the bottom called `"dependencies"`, and one of the items listed will be `"lodash"`, followed by a minimum version number. Node and `npm` will track our dependencies for us, so we don't need to worry about installing it once it's listed in `package.json`.
 
-Let's go back to our `generator.js` and include some Lodash to capitalize our randomly selected words. The Lodash function `sample()` takes a collection and returns one (or more) random elements from it. Let's edit our `generate()` function to one item from each array in the `dictionary` object, capitalize it, and concatenate them all together.
+Let's go back to our `generator.js` and include some Lodash to capitalize our randomly selected words. The Lodash function `_.sample()` takes a collection and returns one (or more) random elements from it. Let's edit our `generate()` function to one item from each array in the `dictionary` object, capitalize it, and concatenate them all together.
 
 ```javascript
 var _ = require('lodash');
@@ -99,7 +107,7 @@ function generate() {
 }
 ```
 
-We can verify our function by adding a command to the end of `generate.js` to log our output to the console:
+If we wanted, we could verify our function by adding a command to the end of `generate.js` to log our output to the console:
 
 ```javascript
 console.log(generate());
@@ -116,6 +124,8 @@ $ node generate.js
 Toasted Leek Sandwiches Chariot
 ```
 
+Using `console.log()` as a debugging tool is a good practice. It would, however, be a good idea to remove the `console.log()` from the final production-ready script, because otherwise it'll just clutter up our console.
+
 ### Fine-tuning the generator
 
 Our output is looking pretty good so far, but it's not quite tweet-able yet. We'd like a couple of different types of output, so we don't repeat ourselves too often. What if we want a few different kinds of truck names, following certain patterns? Let's make four patterns:
@@ -125,9 +135,19 @@ Our output is looking pretty good so far, but it's not quite tweet-able yet. We'
 - The Toasted Leek Sandwich
 - The Sizzling Chanterelle Bowl Conveyance
 
-Given these patterns, and assuming we want them to occur with equal frequency, three-quarters of the time we want "The" to be prefixed to the generated string, a different three-quarters of the time we want the truck type to be at the end, and so forth. There are multiple ways to write something like this, but let's do it this way for now: generate a random number between 1 and 4, and depending on the result have our `generate()` function follow a different output pattern.
+Given these patterns, and assuming we want them to occur with equal frequency, three-quarters of the time we want "The" to be prefixed to the generated string, a different three-quarters of the time we want the truck type to be at the end, and so forth. There are multiple ways to write something like this, but let's do it this way for now: we'll use Lodash's `_.random()` function to generate a random number between 1 and 4 (which will look like `_.random(1, 4)`), and depending on the result have our `generate()` function follow a different output pattern.
+
+Finally, we'll have to make our `generate()` function importable from another JavaScript file in Node. To do this, similar to how we did with the `dictionary.js` script, we'll add the line `module.exports = generate` to the end of the `generate.js` script.
+
+Our `generate.js` file now should look something like this:
 
 ```javascript
+// generate.js
+'use strict';
+
+var _ = require('lodash');
+var dictionary = require('./dictionary');
+
 function generate() {
   var food = pickRandom(dictionary.foods);
   var ingredient = pickRandom(dictionary.ingredients);
@@ -135,7 +155,7 @@ function generate() {
   var truckType = pickRandom(dictionary.truckTypes);
 
   var output = '';
-  var randomNumber = Math.ceil(Math.random() * 3);
+  var randomNumber = _.random(1, 4);
 
   if (randomNumber === 1) {
     output = 'The ' + food + ' ' + truckType;
@@ -149,20 +169,8 @@ function generate() {
 
   return output;
 }
-```
 
-Here, when we're generating a random number between 1 and 4, we're using the `Math.ceil()` function rather than `Math.floor()`, which gets the "ceiling" of the random number (that is, the next integer up). This is simply for human-readable convenience, so we a range of 1 to 4 rather than 0 to 3.
-
-```javascript
-if (randomNumber === 1) {
-  output = 'The ' + food + ' ' + truckType;
-} else if (randomNumber === 2) {
-  output = description + ' ' + food + ' ' + truckType;
-} else if (randomNumber === 3) {
-  output = 'The ' + description + ' ' + food;
-} else {
-  output = 'The ' + description + ' ' + food + ' ' + truckType;
-}
+module.exports = generate;
 ```
 
 ## Set up the Twitter API
@@ -187,7 +195,7 @@ To save Express and Twitter as dependencies in our bot, we run:
 npm install --save express twitter
 ```
 
-We can check our `package.json` under `"dependencies"` and sure enough, `"express"` and `"twitter"` are now listed. This means that when we install our bot on Heroku, we will only need to copy over the `package.json` file and not the `node_modules` directory that we just created. In fact, let's tell Git to ignore `node_modules`, since we can install them at will with `npm` and we don't need our application to be carrying around all their weight all the time.
+We can check our `package.json` under `"dependencies"` and sure enough, `"express"` and `"twitter"` are now listed, along with `"lodash"`. This means that when we install our bot on Heroku, we will only need to copy over the `package.json` file and not the `node_modules` directory that we just created. In fact, let's tell Git to ignore `node_modules`, since we can install them at will with `npm` and we don't need our application to be carrying around all their weight all the time.
 
 ```bash
 echo "node_modules" >> .gitignore
@@ -351,7 +359,7 @@ If everything's been written correctly, and there are no errors, we should have 
 
 So far, this is pretty good. But in order to run it constantly, we'd have to keep our own computer online permanently and never close this server. Fortunately, there are many services that will host our application and keep it running. One such "platform-as-a-service" is [Heroku](heroku.com). As of this writing, they'll even host some low-impact apps for free.
 
-I assume you've already set up your Heroku account and installed the [Heroku toolbelt](toolbelt.heroku.com).
+I assume you've already set up your Heroku account and installed the [Heroku toolbelt](toolbelt.heroku.com), and that you've used `heroku login` to log in to your Heroku account on the command line.
 
 ### Preparing for Heroku
 
@@ -405,7 +413,7 @@ Replace `<name>` with the name you want your app to possess, i.e. the part that 
 
 The Heroku tools will work by looking for a remote on our Git repository called `heroku`, which is automatically added by the `heroku create` command. You can verify this by running `git remote -v` from your terminal; you should now called `heroku`. When you `git push` to the `master` branch on the `heroku` repository, you are telling Heroku "update the current code base "
 
-### Keeping our Heroku application alive
+### Keeping our server alive
 
 Heroku turns off free apps if they've been idle for a certain amount of time. We need to make sure that our app receives some kind of HTTP request every so often, so that Heroku will keep its process alive. Fortunately, we already wrote an Express route to handle getting a request, but we need a little more work in order to get our app to ping itself every so often.
 
@@ -426,8 +434,68 @@ function keepAlive() {
 setInterval(keepAlive, 600000);
 ```
 
-What this means is that, unless there's an error (which we log to the console), send a `GET` request to our server at the `/` (root) route every 600,000 milliseconds = 10 minutes, and then print a console message stating that it happened. (Strictly speaking, the `console.log` statement isn't necessary here, since we'll get a log that a `GET` request was received, but let's make our app as explicit as possible about what's happening.)
+What this means is that, unless there's an error (which we log to the console), send a `GET` request to our server at the `/` (root) route every 600,000 milliseconds = 10 minutes, and then print a console message stating that it happened. (Strictly speaking, the `console.log()` statement isn't necessary here, since we'll get a log that a `GET` request was received, but let's make our app as explicit as possible about what's happening.)
 
 Commit these changes to Git, and then `git push heroku master` once more. Heroku will rebuild the app with its new dependency and code; then the app will restart, and now it will also automatically keep itself alive.
 
+### Setting environment variables
+
+We're expecting our app to get quite a few values from environment variables. Setting environment variables on a Heroku app is pretty simple. It can be done from the Heroku web dashboard, or from the command line. Let's do it the second way.
+
+The Heroku toolbelt provides the command `heroku config:set` for setting an environment variable. Let's say we want our app to tweet once per hour:
+
+```
+heroku config:set TWEET_INTERVAL=3600000
+```
+
+Using this procedure, we'll set every environment variable we'll need. (We won't need an explicit `PORT` because Heroku automatically assigns that.) We can get the values of the four Twitter API keys and tokens from the [Twitter apps page](apps.twitter.com) under the "Keys and Access Tokens" tab.
+
+```
+heroku config:set TWITTER_CONSUMER_KEY=
+heroku config:set TWITTER_CONSUMER_SECRET=
+heroku config:set TWITTER_ACCESS_TOKEN_KEY=
+heroku config:set TWITTER_ACCESS_TOKEN_SECRET=
+```
+
+Of course, put the appropriate line of gibberish after the equals sign. If you want to check what you've written, you can use the `heroku config` command (without `:set`) to get the current value of your variables, or `heroku config:get` to get an individual variable's value. If you've typed something wrong, you can unset a variable by using `heroku config:unset`.
+
+### Starting up the server
+
+We need to upload our app's code to Heroku and then, basically, turn it on. For a Node app, Heroku builds its codebase based on what's inside your `package.json` file. The most important value in `package.json` as far as Node is concerned is `"main"`: this is the name of the file that Node should start your application running with, sometimes referred to as the app's *entry point*.
+
+from whatever is in the `master` branch of Git's `heroku` remote repository. So, we need to add all our files to Git, commit them, and push them to where we want them to go.
+
+```
+git add .
+git commit -m "initial push to Heroku"
+git push heroku master
+```
+
+Heroku will churn away for a while, setting up our app, installing all the dependencies listed in `package.json`, and doing lots of other little tasks. Once it's complete, all we have to do is turn the key in the ignition.
+
+A Heroku app runs in something called a "dyno", which is basically a running copy of your app. We will only need one dyno for our app. Our Heroku app won't actually start until we allocate a dyno to it, which we do from the command line as follows:
+
+```
+heroku ps:scale web=1
+```
+
+Heroku has two types of dynos: for "web" processes and for "worker" processes. Our app will use a "web" process, since it has an HTTP endpoint at which it will be pinging itself in order to keep itself alive. This command starts up one dyno to run our app.
+
+Once the server is running, we should expect our bot to tweet immediately, and then again every `TWEET_INTERVAL` milliseconds (or the default value).
+
 ## Sum-up
+
+Congratulations! We've successfully built an app with Node, got it talking to Twitter, and running on Heroku.
+
+Our bot is pretty basic. It only has a few words in its dictionary. There are a whole bunch of places we could make improvements, particularly to the `generate()` function. The good news is that because our app is modular, in order to make changes we have only to change the file in which the data or code to be changed is located. When we redeploy our app to Heroku with `git push heroku master`, the app will automatically rebuild to the latest committed code base.
+
+Some ideas on how to extend this bot:
+
+- More patterns for food truck names
+- Get more words from larger word databases (e.g. the [Wordnik](wordnik.com) API)
+- Respond to replies
+- Favorite mentions
+
+## About
+
+This tutorial was written by Emily Aviva Kapor-Mater ([website](emilyaviva.com), [github](github.com/emilyaviva), [twitter](twitter.com/emilyaviva)). It was last substantively updated 11 December 2015. All of the code herein is licensed under the [MIT license](github.com/emilyaviva/node-bot-tutorial/LICENSE).
