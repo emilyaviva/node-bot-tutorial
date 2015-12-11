@@ -4,8 +4,8 @@ var Twitter = require('twitter');
 var express = require('express');
 var generate = require('./lib/generate');
 var app = express();
-var port = 3000;
-var tweetInterval = 1800000;
+var port = process.env.PORT || 3000;
+var tweetInterval = process.env.TWEET_INTERVAL || 1800000;
 
 var tweet = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -33,7 +33,7 @@ app.listen(port, function() {
 
 function keepAlive() {
   try {
-    http.get('http://[put the name of your app on Heroku here].herokuapp.com/');
+    http.get('http://food-truck-bot.herokuapp.com/');
     console.log('GET request sent; kept alive.');
   } catch(e) {
     console.log(e);
