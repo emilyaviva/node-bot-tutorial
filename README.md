@@ -149,10 +149,10 @@ var _ = require('lodash');
 var dictionary = require('./dictionary');
 
 function generate() {
-  var food = pickRandom(dictionary.foods);
-  var ingredient = pickRandom(dictionary.ingredients);
-  var description = pickRandom(dictionary.descriptions);
-  var truckType = pickRandom(dictionary.truckTypes);
+  var food = _.capitalize(_.sample(dictionary.foods));
+  var ingredient = _.capitalize(_.sample(dictionary.ingredients));
+  var description = _.capitalize(_.sample(dictionary.descriptions));
+  var truckType = _.capitalize(_.sample(dictionary.truckTypes));
 
   var output = '';
   var randomNumber = _.random(1, 4);
