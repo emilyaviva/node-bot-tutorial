@@ -17,7 +17,10 @@ var tweet = new Twitter({
 function makeTweet() {
   var content = generate();
   tweet.post('statuses/update', {status: content}, function(error, tweet, res) {
-    if (error) throw error;
+    if (error) {
+      console.error(error);
+      throw error;
+    };
     console.log('Posted tweet: \"' + content + '\"');
   });
 }
