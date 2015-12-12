@@ -2,6 +2,7 @@
 
 var Twitter = require('twitter');
 var express = require('express');
+var http = require('http');
 var generate = require('./lib/generate');
 var app = express();
 var port = process.env.PORT || 3000;
