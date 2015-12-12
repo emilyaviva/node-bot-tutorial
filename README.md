@@ -496,6 +496,8 @@ Some ideas on how to extend this bot:
 - Respond to replies
 - Favorite mentions
 
+The example code, which is used to power [the example bot](twitter.com/Food_Truck_Bot) derived from this tutorial, has a couple of extra bells and whistles that you can use as a basis to imitate and extend. Don't be afraid to experiment!
+
 ## About
 
 This tutorial was written by Emily Aviva Kapor-Mater ([website](emilyaviva.com), [github](github.com/emilyaviva), [twitter](twitter.com/emilyaviva)). It was last substantively updated 11 December 2015. All of the code herein is licensed under the [MIT license](github.com/emilyaviva/node-bot-tutorial/LICENSE).
