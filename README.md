@@ -485,7 +485,7 @@ Once the server is running, we should expect our bot to tweet immediately, and t
 
 ## Sum-up
 
-Congratulations! We've successfully built an app with Node, got it talking to Twitter, and running on Heroku.
+Congratulations! We've successfully built an app with Node, got it talking to Twitter, and running on Heroku. If you missed some of the code, you can find it in this repository, under `src/tutorial/`.
 
 Our bot is pretty basic. It only has a few words in its dictionary. There are a whole bunch of places we could make improvements, particularly to the `generate()` function. The good news is that because our app is modular, in order to make changes we have only to change the file in which the data or code to be changed is located. When we redeploy our app to Heroku with `git push heroku master`, the app will automatically rebuild to the latest committed code base.
 
@@ -496,7 +496,7 @@ Some ideas on how to extend this bot:
 - Respond to replies
 - Favorite mentions
 
-The example code, which is used to power [the example bot](twitter.com/Food_Truck_Bot) derived from this tutorial, has a couple of extra bells and whistles that you can use as a basis to imitate and extend. Don't be afraid to experiment!
+The code located in `src/production/`, which is used to power [the example bot](twitter.com/Food_Truck_Bot) derived from this tutorial, has a couple of extra bells and whistles that you can use as a basis to imitate and extend. Don't be afraid to experiment!
 
 ## About
 
