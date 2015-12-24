@@ -1,10 +1,13 @@
 {
   "name": "food-truck-twitter-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A bot that tweets randomly generated food truck names.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "5.3.0"
   },
   "author": "Emily Aviva Kapor-Mater",
   "license": "MIT",
